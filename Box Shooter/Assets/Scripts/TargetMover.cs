@@ -4,7 +4,12 @@ using System.Collections;
 public class TargetMover : MonoBehaviour {
 
 	// define the possible states through an enumeration
-	public enum motionDirections {Spin,Horizontal, Vertical};
+	public enum motionDirections
+    {
+        Spin,
+        Horizontal,
+        Vertical
+    };
 	
 	// store the state
 	public motionDirections motionState = motionDirections.Horizontal;
@@ -13,8 +18,18 @@ public class TargetMover : MonoBehaviour {
 	public float spinSpeed = 180.0f;
 	public float motionMagnitude = 0.1f;
 
-	// Update is called once per frame
-	void Update () {
+    private Vector3 _randomLocation = new Vector3();
+
+    void Start()
+    {
+        _randomLocation.x = 0;
+        _randomLocation.y = 0;
+        _randomLocation.z = 0;
+    }
+
+    // Update is called once per frame
+    void Update ()
+    {
 
 		// do the appropriate motion based on the motionState
 		switch(motionState) {
