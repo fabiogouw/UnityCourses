@@ -10,11 +10,11 @@ public class Victory : MonoBehaviour {
 	// then the player has reached the victory point of the level
 	void OnTriggerEnter2D (Collider2D other)
 	{
-		if ((other.tag == "Player" ) && (!taken) && (other.gameObject.GetComponent<CharacterController2D>().playerCanMove))
+        if ((other.tag == "Player" ) && (!taken) && (other.gameObject.GetComponent<CharacterController2D>().playerCanMove))
 		{
 			// mark as taken so doesn't get taken multiple times
-			taken=true;
-
+			taken = true;
+            
 			// if explosion prefab is provide, then instantiate it
 			if (explosion)
 			{

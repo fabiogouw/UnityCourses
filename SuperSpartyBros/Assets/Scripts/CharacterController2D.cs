@@ -43,17 +43,31 @@ public class CharacterController2D : MonoBehaviour {
 	float _vy;
 
 	// player tracking
-	bool facingRight = true;
-	bool isGrounded = false;
-	bool isRunning = false;
+	bool _facingRight = true;
+	bool _isGrounded = false;
+	bool _isRunning = false;
+    bool _canDoubleJump = false;
 
 	// store the layer the player is on (setup in Awake)
 	int _playerLayer;
 
 	// number of layer that Platforms are on (setup in Awake)
 	int _platformLayer;
-	
-	void Awake () {
+
+    public bool IsGrounded
+    {
+        get
+        {
+            return _isGrounded;
+        }
+
+        set
+        {
+            _isGrounded = value;
+        }
+    }
+
+    void Awake () {
 		// get a reference to the components we are going to be changing and store a reference for efficiency purposes
 		_transform = GetComponent<Transform> ();
 		
@@ -92,13 +106,13 @@ public class CharacterController2D : MonoBehaviour {
 		// Determine if running based on the horizontal movement
 		if (_vx != 0) 
 		{
-			isRunning = true;
+			_isRunning = true;
 		} else {
-			isRunning = false;
+			_isRunning = false;
 		}
 
 		// set the running animation state
-		_animator.SetBool("Running", isRunning);
+		_animator.SetBool("Running", _isRunning);
 
 		// get the current vertical velocity from the rigidbody component
 		_vy = _rigidbody.velocity.y;
@@ -106,20 +120,27 @@ public class CharacterController2D : MonoBehaviour {
 		// Check to see if character is grounded by raycasting from the middle of the player
 		// down to the groundCheck position and see if collected with gameobjects on the
 		// whatIsGround layer
-		isGrounded = Physics2D.Linecast(_transform.position, groundCheck.position, whatIsGround);  
+		_isGrounded = Physics2D.Linecast(_transform.position, groundCheck.position, whatIsGround);
+
+        // allow double jump after grounded
+        if (_isGrounded)
+        {
+            _canDoubleJump = true;
+        }
 
 		// Set the grounded animation states
-		_animator.SetBool("Grounded", isGrounded);
+		_animator.SetBool("Grounded", _isGrounded);
 
-		if(isGrounded && Input.GetButtonDown("Jump")) // If grounded AND jump button pressed, then allow the player to jump
+		if(_isGrounded && Input.GetButtonDown("Jump")) // If grounded AND jump button pressed, then allow the player to jump
 		{
-			// reset current vertical motion to 0 prior to jump
-			_vy = 0f;
-			// add a force in the up direction
-			_rigidbody.AddForce (new Vector2 (0, jumpForce));
-			// play the jump sound
-			PlaySound(jumpSFX);
-		}
+            DoJump();
+        }
+        else if (_canDoubleJump && Input.GetButtonDown("Jump")) // if can double jump and jump button pressed, allow player to double jump
+        {
+            DoJump();
+            // disable double jump after double jumping since you can really do it once
+            _canDoubleJump = false;
+        }
 	
 		// If the player stops jumping mid jump and player is not yet falling
 		// then set the vertical velocity to 0 (he will start to fall from gravity)
@@ -147,14 +168,14 @@ public class CharacterController2D : MonoBehaviour {
 
 		if (_vx > 0) // moving right so face right
 		{
-			facingRight = true;
+			_facingRight = true;
 		} else if (_vx < 0) { // moving left so face left
-			facingRight = false;
+			_facingRight = false;
 		}
 
 		// check to see if scale x is right for the player
 		// if not, multiple by -1 which is an easy way to flip a sprite
-		if (((facingRight) && (localScale.x<0)) || ((!facingRight) && (localScale.x>0))) {
+		if (((_facingRight) && (localScale.x<0)) || ((!_facingRight) && (localScale.x>0))) {
 			localScale.x *= -1;
 		}
 
@@ -180,6 +201,17 @@ public class CharacterController2D : MonoBehaviour {
 			this.transform.parent = null;
 		}
 	}
+
+    // make the player jump
+    void DoJump()
+    {
+        // reset current vertical motion to 0 prior to jump
+        _vy = 0f;
+        // add a force in the up direction
+        _rigidbody.AddForce(new Vector2(0, jumpForce));
+        // play the jump sound
+        PlaySound(jumpSFX);
+    }
 
 	// do what needs to be done to freeze the player
  	void FreezeMotion() {
@@ -266,4 +298,9 @@ public class CharacterController2D : MonoBehaviour {
 		_transform.position = spawnloc;
 		_animator.SetTrigger("Respawn");
 	}
+
+    public void EnemyBounce()
+    {
+        DoJump();
+    }
 }
