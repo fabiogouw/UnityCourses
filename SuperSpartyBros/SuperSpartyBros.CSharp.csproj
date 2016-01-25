@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\MenuButtonLoadLevel.cs" />
     <Compile Include="Assets\Scripts\MenuPauseAndLoadLevel.cs" />
     <Compile Include="Assets\Scripts\PlatformMover.cs" />
+    <Compile Include="Assets\Scripts\PlatformVanisher.cs" />
     <Compile Include="Assets\Scripts\PlayerPrefManager.cs" />
     <Compile Include="Assets\Scripts\ScreenshotUtility.cs" />
     <Compile Include="Assets\Scripts\TimedObjectDestructor.cs" />
