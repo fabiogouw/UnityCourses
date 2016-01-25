@@ -30,11 +30,12 @@ public class CharacterController2D : MonoBehaviour {
 	public AudioClip fallSFX;
 	public AudioClip jumpSFX;
 	public AudioClip victorySFX;
+    public AudioClip extraLifeSFX;
 
-	// private variables below
+    // private variables below
 
-	// store references to components on the gameObject
-	Transform _transform;
+    // store references to components on the gameObject
+    Transform _transform;
 	Rigidbody2D _rigidbody;
 	Animator _animator;
 	AudioSource _audio;
@@ -274,7 +275,17 @@ public class CharacterController2D : MonoBehaviour {
 		}
 	}
 
-	public void CollectCoin(int amount) {
+    public void CollectExtraLife()
+    {
+        PlaySound(extraLifeSFX);
+
+        if (GameManager.gm)
+        {
+            GameManager.gm.AddLives(1);
+        }
+    }
+
+    public void CollectCoin(int amount) {
 		PlaySound(coinSFX);
 
 		if (GameManager.gm) // add the points through the game manager, if it is available

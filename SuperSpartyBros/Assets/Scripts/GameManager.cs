@@ -117,19 +117,39 @@ public class GameManager : MonoBehaviour {
 		UIScore.text = "Score: "+score.ToString();
 		UIHighScore.text = "Highscore: "+highscore.ToString ();
 		UILevel.text = Application.loadedLevelName;
-		
-		// turn on the appropriate number of life indicators in the UI based on the number of lives left
-		for(int i=0;i<UIExtraLives.Length;i++) {
-			if (i<(lives-1)) { // show one less than the number of lives since you only typically show lifes after the current life in UI
-				UIExtraLives[i].SetActive(true);
-			} else {
-				UIExtraLives[i].SetActive(false);
-			}
-		}
-	}
 
-	// public function to add points and update the gui and highscore player prefs accordingly
-	public void AddPoints(int amount)
+        UpdateLivesUI();
+    }
+
+    public void UpdateLivesUI()
+    {
+        // turn on the appropriate number of life indicators in the UI based on the number of lives left
+        for (int i = 0; i < UIExtraLives.Length; i++)
+        {
+            if (i < (lives - 1))
+            { // show one less than the number of lives since you only typically show lifes after the current life in UI
+                UIExtraLives[i].SetActive(true);
+            }
+            else {
+                UIExtraLives[i].SetActive(false);
+            }
+        }
+    }
+
+    public void AddLives(int amount)
+    {
+        if (lives + amount <= 10)
+        {
+            // increase score
+            lives += amount;
+        }
+
+        // update UI
+        UpdateLivesUI();
+    }
+
+    // public function to add points and update the gui and highscore player prefs accordingly
+    public void AddPoints(int amount)
 	{
 		// increase score
 		score+=amount;
