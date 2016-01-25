@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityEditor;
 
 public class CharacterController2D : MonoBehaviour {
 
@@ -31,6 +32,9 @@ public class CharacterController2D : MonoBehaviour {
 	public AudioClip jumpSFX;
 	public AudioClip victorySFX;
     public AudioClip extraLifeSFX;
+    public AudioClip stunAllFX;
+
+    public GameObject stunAllExplosion;
 
     // private variables below
 
@@ -157,8 +161,14 @@ public class CharacterController2D : MonoBehaviour {
 		// if moving up then don't collide with platform layer
 		// this allows the player to jump up through things on the platform layer
 		// NOTE: requires the platforms to be on a layer named "Platform"
-		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f)); 
-	}
+		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f));
+
+        if (CrossPlatformInputManager.GetButtonDown("Fire1"))
+        {
+            StunAll();
+        }
+
+    }
 
 	// Checking to see if the sprite should be flipped
 	// this is done in LateUpdate since the Animator may override the localScale
@@ -203,6 +213,21 @@ public class CharacterController2D : MonoBehaviour {
 			this.transform.parent = null;
 		}
 	}
+
+    private void StunAll()
+    {
+        PlaySound(stunAllFX);
+        if (stunAllExplosion)
+        {
+            Instantiate(stunAllExplosion, transform.position, transform.rotation);
+        }
+        var objetcs = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach(GameObject obj in objetcs)
+        {
+            var enemy = obj.GetComponent<Enemy>();
+            enemy.Stunned();
+        }
+    }
 
     // make the player jump
     void DoJump()
