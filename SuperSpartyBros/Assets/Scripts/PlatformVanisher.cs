@@ -33,7 +33,9 @@ public class PlatformVanisher : MonoBehaviour {
             Debug.LogError("Animator component missing from this gameobject");
         }
         _lastChangeStateTime = 0f + timeDelay;
-	}
+        _animator.SetBool("Solid", true);
+        _animator.SetBool("Vanishing", false);
+    }
 	
 	// game loop
 	void Update () {
