@@ -33,6 +33,7 @@ public class CharacterController2D : MonoBehaviour {
 	public AudioClip victorySFX;
     public AudioClip extraLifeSFX;
     public AudioClip stunAllFX;
+    public AudioClip stunFailedSFX;
 
     public GameObject stunAllExplosion;
 
@@ -165,7 +166,22 @@ public class CharacterController2D : MonoBehaviour {
 
         if (CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
-            StunAll();
+            if (GameManager.gm)
+            {
+                bool stunHappened = GameManager.gm.StunAllEnemies();
+                if (stunHappened)
+                {
+                    PlaySound(stunAllFX);
+                    if (stunAllExplosion)
+                    {
+                        Instantiate(stunAllExplosion, transform.position, transform.rotation);
+                    }
+                }
+                else
+                {
+                    PlaySound(stunFailedSFX);
+                }
+            }
         }
 
     }
@@ -213,21 +229,6 @@ public class CharacterController2D : MonoBehaviour {
 			this.transform.parent = null;
 		}
 	}
-
-    private void StunAll()
-    {
-        PlaySound(stunAllFX);
-        if (stunAllExplosion)
-        {
-            Instantiate(stunAllExplosion, transform.position, transform.rotation);
-        }
-        var objetcs = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach(GameObject obj in objetcs)
-        {
-            var enemy = obj.GetComponent<Enemy>();
-            enemy.Stunned();
-        }
-    }
 
     // make the player jump
     void DoJump()

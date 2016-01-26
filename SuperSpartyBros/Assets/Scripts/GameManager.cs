@@ -22,11 +22,16 @@ public class GameManager : MonoBehaviour {
 	public Text UIHighScore;
 	public Text UILevel;
 	public GameObject[] UIExtraLives;
-	public GameObject UIGamePaused;
+    public GameObject[] UIPowerIndicator;
+    public GameObject UIGamePaused;
 
 	// private variables
-	GameObject _player;
-	Vector3 _spawnLocation;
+	private GameObject _player;
+	private Vector3 _spawnLocation;
+    private int _powerLevel = 0;
+    private float _powerLastUsedTime = 0f;
+
+    private const int POWER_RECHARGING_TIME = 3;
 
 	// set things up here
 	void Awake () {
@@ -50,7 +55,8 @@ public class GameManager : MonoBehaviour {
 				UIGamePaused.SetActive(false); // remove the pause UI
 			}
 		}
-	}
+        AddPower();
+    }
 
 	// setup all the variables, the UI, and provide errors if things not setup properly.
 	void setupDefaults() {
@@ -119,6 +125,18 @@ public class GameManager : MonoBehaviour {
 		UILevel.text = Application.loadedLevelName;
 
         UpdateLivesUI();
+        UpdatePowerUI();
+    }
+
+    public void AddPower()
+    {
+        int powerLevel = (int)(Time.time - _powerLastUsedTime) / POWER_RECHARGING_TIME;
+        if(powerLevel >= 10)
+        {
+            powerLevel = 10;
+        }
+        _powerLevel = powerLevel;
+        UpdatePowerUI();
     }
 
     public void UpdateLivesUI()
@@ -132,6 +150,21 @@ public class GameManager : MonoBehaviour {
             }
             else {
                 UIExtraLives[i].SetActive(false);
+            }
+        }
+    }
+
+    public void UpdatePowerUI()
+    {
+        // turn on the appropriate number of life indicators in the UI based on the number of lives left
+        for (int i = 0; i < UIPowerIndicator.Length; i++)
+        {
+            if (i < (_powerLevel))
+            { // show one less than the number of lives since you only typically show lifes after the current life in UI
+                UIPowerIndicator[i].SetActive(true);
+            }
+            else {
+                UIPowerIndicator[i].SetActive(false);
             }
         }
     }
@@ -164,8 +197,29 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	// public function to remove player life and reset game accordingly
-	public void ResetGame() {
+    public bool StunAllEnemies()
+    {
+        if (_powerLevel < 10)
+        {
+            return false;
+        }
+        else
+        {
+            var objetcs = GameObject.FindGameObjectsWithTag("Enemy");
+            foreach (GameObject obj in objetcs)
+            {
+                var enemy = obj.GetComponent<Enemy>();
+                enemy.Stunned();
+            }
+            _powerLevel = 0;
+            _powerLastUsedTime = Time.time;
+            UpdatePowerUI();
+            return true;
+        }
+    }
+
+    // public function to remove player life and reset game accordingly
+    public void ResetGame() {
 		// remove life and update GUI
 		lives--;
 		refreshGUI();
