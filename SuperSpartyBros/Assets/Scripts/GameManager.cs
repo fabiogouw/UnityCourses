@@ -209,7 +209,10 @@ public class GameManager : MonoBehaviour {
             foreach (GameObject obj in objetcs)
             {
                 var enemy = obj.GetComponent<Enemy>();
-                enemy.Stunned();
+                if (enemy != null)
+                {
+                    enemy.Stunned();
+                }
             }
             _powerLevel = 0;
             _powerLastUsedTime = Time.time;
