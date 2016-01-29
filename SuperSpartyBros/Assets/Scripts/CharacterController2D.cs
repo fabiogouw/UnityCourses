@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.CrossPlatformInput;
-using UnityEditor;
 
 public class CharacterController2D : MonoBehaviour {
 
